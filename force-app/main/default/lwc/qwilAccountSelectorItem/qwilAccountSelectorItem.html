@@ -1,0 +1,23 @@
+<template>
+  <a
+    href="#"
+    class="slds-box slds-box_link slds-box_x-small slds-media slds-m-bottom_x-small slds-theme_default"
+    onclick={handleClick}
+  >
+    <div
+      class="slds-media__figure slds-media__figure_fixed-width slds-align_absolute-center slds-m-left_xx-small"
+    >
+      <lightning-avatar
+        src={account.orgAvatar}
+        fallback-icon-name="standard:account"
+        variant="circle"
+        size="large"
+      ></lightning-avatar>
+    </div>
+    <div class="slds-media__body slds-p-around_small">
+      <h2 class="slds-truncate slds-text-heading_small" title={account.orgName}>
+        {account.orgName}
+      </h2>
+    </div>
+  </a>
+</template>

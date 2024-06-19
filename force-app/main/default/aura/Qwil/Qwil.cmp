@@ -1,0 +1,8 @@
+<aura:component implements="force:appHostable">
+  <aura:html tag="style">
+    /* remove padding around the component with the assumption this will be
+    loaded in a tab by itself */ .slds-template_default { padding: 0rem; }
+  </aura:html>
+
+  <c:qwilApp></c:qwilApp>
+</aura:component>
