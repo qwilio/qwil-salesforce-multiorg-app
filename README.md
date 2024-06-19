@@ -15,11 +15,10 @@ This example consists of the following elements:
      2. create SDK session token for a given Qwil account.
 2. The [QwilApiLib.js](force-app/main/default/staticresources/QwilApiLib.js) static resource
    - This is a copy of the [Qwil IFrame API](https://github.com/qwilio/qwil-iframe-api).
-3. The [qwilEmbed](force-app/main/default/lwc/qwilEmbed/) Lightning Web Component
-   - Calls `QwilSdk.getEntityMemberships()` to retrieve a list of Qwil accounts mapped
-     to the logged in Salesforce user.
-   - If more than one account is returned, user is offered a choice of which to Qwil account to log in to.
-   - To log in, it calls `QwilSdk.authenticate()` to retrieve a session token, then uses the Qwil IFrame API to embed a light version of Qwil.
+3. [Lightning Web Components](force-app/main/default/lwc/)
+   - [qwilApp](force-app/main/default/lwc/qwilApp): Main app entry point.
+   - [qwilEmbed](force-app/main/default/lwc/qwilEmbed): Component that loads QwilApi and embeds the iFrame.
+   - [qwilAccountSelector](force-app/main/default/lwc/qwilAccountSelector): Account selector component, used when the Salesforce user has more than one associated Qwil account.
 4. The [Qwil](force-app/main/default/aura/Qwil/Qwil.cmp) Aura component
    - This is a very light wrapper around the `qwilEmbed` LWC, which allows us to add it as a salesforce tab without additional paddings around the component.
 
@@ -31,7 +30,7 @@ This example consists of the following elements:
    ```
 2. Get a Super API Key
    - In Qwil, create a System API Key with the following permissions:
-     - "This key can create SDK tokens"\_
+     - _"This key can create SDK tokens"_
      - _"This key can perform read-only admin actions"_
    - You must set CIDR block restrictions for this key.
    - Get in touch with your Qwil contact to get your key promoted to a Super API Key (You will need to be on an Enterprise plan and have dedicated Qwil Hosting).
