@@ -36,7 +36,8 @@ export default class QwilEmbed extends LightningElement {
       endpoint,
       options: {
         emitDownloads: true, // handle downloads ourselves
-        contactsTappable: true // make contacts tappable, and emit click-on-contact event
+        contactsTappable: true, // make contacts tappable, and emit click-on-contact event
+        emitMeetingJoin: true // handle opening window ourselfs since salesforce mobile app blocks iframe from doing so
       },
       targetElement: container,
       onLoad: (qwilApi) => {
@@ -71,6 +72,9 @@ export default class QwilEmbed extends LightningElement {
         qwilApi.on("download-request", ({ filename, url }) =>
           this.downloadFileFromUrl(url, filename)
         );
+
+        // Opening extrernal window from iFrame does not work on SF mobile, so we handle it here
+        qwilApi.on("meeting-join", ({ url }) => this.openUrlInNewWindow(url));
       },
       // Handle error case where we have token from Apex call, but we fail to load Qwil using said token.
       onError: () => {
@@ -81,12 +85,29 @@ export default class QwilEmbed extends LightningElement {
   }
 
   downloadFileFromUrl(url, filename) {
+    const downloadContainer = this.template.querySelector(
+      ".download-container"
+    );
     const element = document.createElement("a");
     element.href = url;
     element.download = filename;
-    document.body.appendChild(element);
+    downloadContainer.append(element);
     element.click();
-    element.remove();
+    downloadContainer.removeChild(element);
+  }
+
+  openUrlInNewWindow(url) {
+    //// window.open behaves strangely on Android SF app. It first navigates to blank page before open, leave app in bad state
+    // window.open(url, '_blank')
+    const downloadContainer = this.template.querySelector(
+      ".download-container"
+    );
+    const element = document.createElement("a");
+    element.href = url;
+    element.target = "_blank";
+    downloadContainer.append(element);
+    element.click();
+    downloadContainer.removeChild(element);
   }
 
   async retrieveCredentials() {
