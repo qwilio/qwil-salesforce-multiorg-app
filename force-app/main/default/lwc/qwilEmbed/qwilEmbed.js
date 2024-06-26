@@ -35,9 +35,9 @@ export default class QwilEmbed extends LightningElement {
       token,
       endpoint,
       options: {
-        emitDownloads: true, // handle downloads ourselves
+        emitDownloads: true, // handle downloads ourselves or else it won't work on salesforce mobile app
         contactsTappable: true, // make contacts tappable, and emit click-on-contact event
-        emitMeetingJoin: true // handle opening window ourselfs since salesforce mobile app blocks iframe from doing so
+        emitMeetingJoin: true // handle opening window ourself since salesforce mobile app blocks iframe from doing so
       },
       targetElement: container,
       onLoad: (qwilApi) => {
@@ -97,7 +97,7 @@ export default class QwilEmbed extends LightningElement {
   }
 
   openUrlInNewWindow(url) {
-    //// window.open behaves strangely on Android SF app. It first navigates to blank page before open, leave app in bad state
+    //// window.open behaves strangely on Android SF app. It first navigates to blank page before open, leaving app in bad state
     // window.open(url, '_blank')
     const downloadContainer = this.template.querySelector(
       ".download-container"
