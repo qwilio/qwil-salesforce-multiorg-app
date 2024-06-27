@@ -7,6 +7,9 @@ import authenticate from "@salesforce/apex/QwilSdk.authenticate";
 export default class QwilEmbed extends LightningElement {
   @api entityUuid;
   @api entityUserXrefUuid;
+  @api orgName;
+  @api orgLogo;
+  @api isMultiOrg;
 
   credentials;
   qwilApi;
@@ -37,7 +40,10 @@ export default class QwilEmbed extends LightningElement {
       options: {
         emitDownloads: true, // handle downloads ourselves or else it won't work on salesforce mobile app
         contactsTappable: true, // make contacts tappable, and emit click-on-contact event
-        emitMeetingJoin: true // handle opening window ourself since salesforce mobile app blocks iframe from doing so
+        emitMeetingJoin: true, // handle opening window ourself since salesforce mobile app blocks iframe from doing so
+        emitChatListBack: this.isMultiOrg, // if multi-org, display back button on chat list, so we can take users back to org selector
+        chatListTitle: this.orgName,
+        chatListLogo: this.orgLogo
       },
       targetElement: container,
       onLoad: (qwilApi) => {
@@ -73,8 +79,15 @@ export default class QwilEmbed extends LightningElement {
           this.downloadFileFromUrl(url, filename)
         );
 
-        // Opening extrernal window from iFrame does not work on SF mobile, so we handle it here
+        // Opening external window from iFrame does not work on SF mobile, so we handle it here
         qwilApi.on("meeting-join", ({ url }) => this.openUrlInNewWindow(url));
+
+        // When users click back button on chat list, we emit an event so the caller can take them back to the org selector
+        qwilApi.on("chat-list-back", () => {
+          this.dispatchEvent(
+            new CustomEvent("exit", { detail: { ...this.account } })
+          );
+        });
       },
       // Handle error case where we have token from Apex call, but we fail to load Qwil using said token.
       onError: () => {

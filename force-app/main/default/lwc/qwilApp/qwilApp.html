@@ -36,7 +36,11 @@
   <template if:true={selected}>
     <c-qwil-embed
       entity-uuid={selected.entityUuid}
+      org-name={selected.orgName}
+      org-logo={selected.orgLogo}
       entity-user-xref-uuid={selected.entityUserXrefUuid}
+      is-multi-org={isMultiOrg}
+      onexit={handleExit}
     >
     </c-qwil-embed>
   </template>

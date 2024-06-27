@@ -3,18 +3,22 @@ import getEntityMemberships from "@salesforce/apex/QwilSdk.getEntityMemberships"
 
 export default class QwilApp extends LightningElement {
   loaded = false;
+  isMultiOrg;
   error;
   accountsForSelection;
   selected;
 
-  async connectedCallback() {
+  async reloadAccounts() {
     const accounts = await this.loadAccounts();
     this.loaded = true;
+    this.isMultiOrg = false;
 
     // Handle case where we are unable to find associated qwil accounts
     if (this.error) {
       return;
     }
+
+    this.isMultiOrg = accounts.length > 1;
 
     if (accounts.length === 0) {
       // show error if no accounts found
@@ -26,6 +30,10 @@ export default class QwilApp extends LightningElement {
     } else {
       this.accountsForSelection = accounts;
     }
+  }
+
+  async connectedCallback() {
+    return this.reloadAccounts();
   }
 
   async loadAccounts() {
@@ -47,7 +55,8 @@ export default class QwilApp extends LightningElement {
     return {
       entityUuid: org.entity_uuid,
       orgName: org.name,
-      orgAvatar: org.avatar_url,
+      orgAvatar: org.avatar_url || "",
+      orgLogo: org.logo_url || "",
       entityUserXrefUuid: user.entity_user_xref_uuid
     };
   }
@@ -55,5 +64,11 @@ export default class QwilApp extends LightningElement {
   handleSelected(event) {
     this.accountsForSelection = null;
     this.selected = { ...event.detail };
+  }
+
+  handleExit() {
+    this.selected = null;
+    this.loaded = false;
+    this.reloadAccounts();
   }
 }
