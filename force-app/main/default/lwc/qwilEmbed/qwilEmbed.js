@@ -1,5 +1,6 @@
 import { LightningElement, api } from "lwc";
 import Toast from "lightning/toast";
+import FORM_FACTOR from "@salesforce/client/formFactor";
 import { loadScript } from "lightning/platformResourceLoader";
 import QwilApiLib from "@salesforce/resourceUrl/QwilApiLib";
 import authenticate from "@salesforce/apex/QwilSdk.authenticate";
@@ -34,11 +35,13 @@ export default class QwilEmbed extends LightningElement {
     // If no error, credentials should have been populated
     const { token, endpoint } = this.credentials;
 
+    const emitDownloads = !this.isRunningOnDesktop(); // on mobile downloads from iframe do not work so we handle on this end.
+
     this.qwilApi = new window.QwilApi({
       token,
       endpoint,
       options: {
-        emitDownloads: true, // handle downloads ourselves or else it won't work on salesforce mobile app
+        emitDownloads,
         contactsTappable: true, // make contacts tappable, and emit click-on-contact event
         emitMeetingJoin: true, // handle opening window ourself since salesforce mobile app blocks iframe from doing so
         emitChatListBack: this.isMultiOrg, // if multi-org, display back button on chat list, so we can take users back to org selector
@@ -95,6 +98,10 @@ export default class QwilEmbed extends LightningElement {
         this.loaded = true;
       }
     });
+  }
+
+  isRunningOnDesktop() {
+    return FORM_FACTOR === "Large";
   }
 
   downloadFileFromUrl(url, filename) {
